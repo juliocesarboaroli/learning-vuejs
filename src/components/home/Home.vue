@@ -7,6 +7,15 @@
       <li class="lista-fotos-item" v-for="foto of fotosComFiltro">
         <meu-painel :titulo="foto.titulo">
           <imagem-responsiva :src="foto.url" :alt="foto.titulo"/>
+
+          <!-- @click.native, pois a diretiva só conhece o que ela disponibiliza -->
+          <!-- Esta opção faz com que o evento click nativo de qualquer tag seja disparado -->
+          <meu-botao 
+                  rotulo="Remover" 
+                  tipo="button" 
+                  :confirmacao="true"
+                  estilo="perigo"
+                  @botaoAtivado="remove(foto)"/>
         </meu-painel>
       </li>
     </ul>
@@ -14,27 +23,34 @@
 </template>
 
 <script>
-import Painel from '../shared/painel/Painel.vue';
-import ImagemResponsiva from '../shared/imagem-responsiva/ImagemResponsiva.vue';
+import Painel from "../shared/painel/Painel.vue";
+import ImagemResponsiva from "../shared/imagem-responsiva/ImagemResponsiva.vue";
+import Botao from "../shared/botao/Botao.vue";
 
 export default {
-
   components: {
-    'meu-painel': Painel,
-    'imagem-responsiva': ImagemResponsiva
+    "meu-painel": Painel,
+    "imagem-responsiva": ImagemResponsiva,
+    "meu-botao": Botao
+  },
+
+  methods: {
+    remove(foto) {
+      alert(foto.titulo);
+    }
   },
 
   data() {
     return {
       fotos: [],
-      filtro: ''
+      filtro: ""
     };
   },
 
   computed: {
     fotosComFiltro() {
       if (this.filtro) {
-        let regex = new RegExp(this.filtro.trim(), 'i');
+        let regex = new RegExp(this.filtro.trim(), "i");
         return this.fotos.filter(f => regex.test(f.titulo));
       } else {
         return this.fotos;
