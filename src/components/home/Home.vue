@@ -6,7 +6,7 @@
     <ul class="lista-fotos">
       <li class="lista-fotos-item" v-for="foto of fotosComFiltro">
         <meu-painel :titulo="foto.titulo">
-          <imagem-responsiva :src="foto.url" :alt="foto.titulo"/>
+          <imagem-responsiva :src="foto.url" :alt="foto.titulo" v-meu-transform:scale.animate="1.2"/>
 
           <!-- @click.native, pois a diretiva só conhece o que ela disponibiliza -->
           <!-- Esta opção faz com que o evento click nativo de qualquer tag seja disparado -->
@@ -27,6 +27,8 @@ import Painel from "../shared/painel/Painel.vue";
 import ImagemResponsiva from "../shared/imagem-responsiva/ImagemResponsiva.vue";
 import Botao from "../shared/botao/Botao.vue";
 
+import transform from '../../directives/Transform';
+
 export default {
   components: {
     "meu-painel": Painel,
@@ -38,6 +40,10 @@ export default {
     remove(foto) {
       alert(foto.titulo);
     }
+  },
+
+  directives: {
+    'meu-transform': transform
   },
 
   data() {

@@ -56,4 +56,8 @@ painel-fade-leave-active // quando o elemento esta sendo removido
   padding: 10px;
   text-transform: uppercase;
 }
+
+.painel-conteudo {
+  overflow: hidden;
+}
 </style>
