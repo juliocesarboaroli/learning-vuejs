@@ -33,7 +33,7 @@ export default {
   computed: {
     estiloDoBotao() {
       // se o valor é padrão ou não passou nada para estilo
-      if (this.estilo == "padrao") return "botao botao-padrao";
+      if (!this.estilo || this.estilo == "padrao") return "botao botao-padrao";
 
       if (this.estilo == "perigo") return "botao botao-perigo";
     }
