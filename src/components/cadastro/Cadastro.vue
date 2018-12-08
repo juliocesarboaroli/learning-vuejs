@@ -1,6 +1,7 @@
 <template>
   <div>
-    <h1 class="centralizado">Cadastro</h1>
+    <h1 class="centralizado" v-if="foto._id">Alteração</h1>
+    <h1 class="centralizado" v-else>Inclusão</h1>
     <h2 class="centralizado">{{ foto.titulo }}</h2>
 
     <!-- v-model faz o two way data binding -->
@@ -26,7 +27,7 @@
 
       <div class="centralizado">
         <meu-botao rotulo="GRAVAR" tipo="submit"/>
-        <router-link to="/">
+        <router-link :to="{name: 'home'}">
           <meu-botao rotulo="VOLTAR" tipo="button"/>
         </router-link>
       </div>
@@ -37,6 +38,7 @@
 <script>
 import ImagemResponsiva from "../shared/imagem-responsiva/ImagemResponsiva.vue";
 import Botao from "../shared/botao/Botao.vue";
+import FotoService from '../../domain/foto/FotoService';
 
 import Foto from "../../domain/foto/Foto";
 
@@ -48,16 +50,30 @@ export default {
 
   methods: {
     gravar() {
-      this.$http
-        .post("http://localhost:3000/v1/fotos", this.foto)
-        .then(() => this.foto = new Foto(), err => console.log(err));
+      this.service
+        .cadastra(this.foto)
+        .then(() => {
+          if (this.id) this.$router.push({name: 'home'});
+          this.foto = new Foto();
+        }, err => console.log(err));
     }
   },
 
   data() {
     return {
-      foto: new Foto()
+      foto: new Foto(),
+      id: this.$route.params.id
     };
+  },
+
+  created() {
+    //$resource foi feito para consumir API's no padrão REST
+    //Caso o backend não use o padrão REST, $http é o objeto mais indicado para requests
+    this.service = new FotoService(this.$resource);
+
+    if (this.id) {
+      this.service.buscaPorId(this.id).then(foto => this.foto = foto);
+    }
   }
 };
 </script>

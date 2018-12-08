@@ -17,6 +17,9 @@ const router = new VueRouter({
   routes
 });
 
+//http usará sempre o endereço abaixo
+Vue.http.options.root = 'http://localhost:3000';
+
 new Vue({
   el: '#app',
   router,
