@@ -1,8 +1,10 @@
 <template>
   <div>
-    <h1 class="centralizado" v-if="foto._id">Alteração</h1>
-    <h1 class="centralizado" v-else>Inclusão</h1>
+    <h1 class="centralizado">Cadastro</h1>
     <h2 class="centralizado">{{ foto.titulo }}</h2>
+
+    <h2 class="centralizado" v-if="foto._id">Alteração</h2>
+    <h2 class="centralizado" v-else>Inclusão</h2>
 
     <!-- v-model faz o two way data binding -->
     <!-- por isso, não é preciso fazer as duas associações manualmente -->
@@ -11,12 +13,29 @@
     <form @submit.prevent="gravar()">
       <div class="controle">
         <label for="titulo">TÍTULO</label>
-        <input v-model.lazy="foto.titulo" id="titulo" autocomplete="off">
+        <input
+          data-vv-as="título"
+          name="titulo"
+          v-validate
+          data-vv-rules="required|min:3|max:30"
+          v-model="foto.titulo"
+          id="titulo"
+          autocomplete="off"
+        >
+        <span class="erro" v-show="errors.has('titulo')">{{ errors.first('titulo') }}</span>
       </div>
 
       <div class="controle">
         <label for="url">URL</label>
-        <input v-model.lazy="foto.url" id="url" autocomplete="off">
+        <input
+          name="url"
+          v-validate
+          data-vv-rules="required"
+          v-model.lazy="foto.url"
+          id="url"
+          autocomplete="off"
+        >
+        <span class="erro" v-show="errors.has('url')">{{ errors.first('url') }}</span>
         <imagem-responsiva v-show="foto.url" :url="foto.url" :titulo="foto.titulo"/>
       </div>
 
@@ -38,7 +57,7 @@
 <script>
 import ImagemResponsiva from "../shared/imagem-responsiva/ImagemResponsiva.vue";
 import Botao from "../shared/botao/Botao.vue";
-import FotoService from '../../domain/foto/FotoService';
+import FotoService from "../../domain/foto/FotoService";
 
 import Foto from "../../domain/foto/Foto";
 
@@ -50,12 +69,20 @@ export default {
 
   methods: {
     gravar() {
-      this.service
-        .cadastra(this.foto)
-        .then(() => {
-          if (this.id) this.$router.push({name: 'home'});
-          this.foto = new Foto();
-        }, err => console.log(err));
+      //$validator existe por conta do vee-validate
+      this.$validator.validateAll().then(success => {
+        if (!success) {
+          return;
+        }
+
+        this.service.cadastra(this.foto).then(
+          () => {
+            if (this.id) this.$router.push({ name: "home" });
+            this.foto = new Foto();
+          },
+          err => console.log(err)
+        );
+      });
     }
   },
 
@@ -72,7 +99,7 @@ export default {
     this.service = new FotoService(this.$resource);
 
     if (this.id) {
-      this.service.buscaPorId(this.id).then(foto => this.foto = foto);
+      this.service.buscaPorId(this.id).then(foto => (this.foto = foto));
     }
   }
 };
@@ -100,6 +127,10 @@ export default {
 
 .centralizado {
   text-align: center;
+}
+
+.erro {
+  color: red;
 }
 </style>
 
